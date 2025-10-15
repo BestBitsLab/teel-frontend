@@ -2,6 +2,7 @@ import { VStack, Button, Text, Spinner } from '@chakra-ui/react'
 import { useAccount, useDisconnect } from 'wagmi'
 import { useEffect, useState } from 'react'
 import MetaMaskConnect from './components/MetaMaskConnect'
+import TokenBalances from './components/TokenBalances'
 
 export default function App() {
   const { address, isConnected } = useAccount()
@@ -9,7 +10,6 @@ export default function App() {
   const [hasProvider, setHasProvider] = useState<boolean | null>(null)
 
   useEffect(() => {
-    // Detect MetaMask or other injected wallet
     if (typeof window !== 'undefined') {
       const providerExists =
         typeof (window as unknown as { ethereum?: object }).ethereum !== 'undefined'
@@ -17,7 +17,6 @@ export default function App() {
     }
   }, [])
 
-  // Show loading spinner while checking provider availability
   if (hasProvider === null) {
     return (
       <VStack gap={4} p={8}>
@@ -34,12 +33,15 @@ export default function App() {
           <Text>
             Connected: {address?.slice(0, 6)}...{address?.slice(-4)}
           </Text>
+
+          {/* ✅ Token balances display */}
+          <TokenBalances walletAddress={address} />
+
           <Button onClick={() => disconnect()} colorScheme="red">
             Disconnect
           </Button>
         </>
       ) : (
-        // Pass hasProvider as a prop to MetaMaskConnect
         <MetaMaskConnect hasProvider={hasProvider} />
       )}
     </VStack>
